@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MatchmakingGameAssignment">
         <activity
-            android:name=".MainActivity2"
+            android:name=".activities.InGameActivity"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
 

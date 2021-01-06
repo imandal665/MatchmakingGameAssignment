@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="30sp"
-    tools:context=".MainActivity2">
+    tools:context=".activities.InGameActivity">
 
     <TextView
         android:id="@+id/game_restarting_info"
