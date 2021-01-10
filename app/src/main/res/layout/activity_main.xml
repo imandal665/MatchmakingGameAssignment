@@ -33,7 +33,23 @@
             android:textSize="20sp"
             android:visibility="gone" />
 
+        <TextView
+            android:id="@+id/time_earned_test_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="20sp"
+            android:layout_marginEnd="40sp"
+            android:layout_toStartOf="@id/game_layout"
+            android:elevation="15sp"
+            android:fontFamily="monospace"
+            android:text="+ 1 sec"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:visibility="gone" />
+
         <LinearLayout
+            android:id="@+id/game_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"

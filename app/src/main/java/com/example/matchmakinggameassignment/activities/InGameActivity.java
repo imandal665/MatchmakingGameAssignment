@@ -1,15 +1,12 @@
 package com.example.matchmakinggameassignment.activities;
 
 
-import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import android.content.ClipData;
 
 //import android.support.v7.app.ActionBarActivity;
 import android.content.Context;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,36 +14,29 @@ import android.os.CountDownTimer;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.Voice;
 import android.util.Log;
 
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.cardview.widget.CardView;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.airbnb.lottie.LottieComposition;
-import com.airbnb.lottie.LottieOnCompositionLoadedListener;
 import com.example.matchmakinggameassignment.R;
 
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Locale;
 
 
 public class InGameActivity extends Activity {
     public static final String TAG = "MainActivity2";
-    TextView imgM, imgL, imgR, imgCMP1, imgCMP2, imgCMP3, gameRestartingInfo, startGameTextView;
+    TextView imgM, imgL, imgR, imgCMP1, imgCMP2, imgCMP3, gameRestartingInfo, startGameTextView, earnedTimeTextView;
     LottieAnimationView lottiewView1, lottiewView2, lottiewView3, backGroundAnim;
     CardView cardConfirm1, cardConfirm2, cardConfirm3, cardMatch1, cardMatch2, cardMatch3, homeAction, pauseMenuCardView, resumeOption, exitOption;
 
@@ -64,6 +54,9 @@ public class InGameActivity extends Activity {
     private View mContentView;
     private android.widget.LinearLayout.LayoutParams layoutParams;
     private MediaPlayer effectsPlayer;
+    private CountDownTimer gameRunningCountDownTimer;
+    private long remainimgTime = 0;
+    private long earnedTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,13 +78,11 @@ public class InGameActivity extends Activity {
 
         backGroundAnim.setFrame(70);
 
-
-        callPauseMenu();
+        pauseGame();
 
         setUpNumbers();
-        
-        setingUpAllListners();
 
+        setingUpAllListners();
 
     }
 
@@ -106,7 +97,7 @@ public class InGameActivity extends Activity {
 
     }
 
-    private void callPauseMenu() {
+    private void pauseGame() {
         if (startGameTextView.getText().toString().equals("Resume"))
             pauseMenuCardView.animate().translationY(0);
         cardMatch1.setEnabled(false);
@@ -120,16 +111,7 @@ public class InGameActivity extends Activity {
         resumeOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                effectsPlayer = MediaPlayer.create(InGameActivity.this, R.raw.resume);
-                effectsPlayer.setVolume(0f, 0.8f);
-                effectsPlayer.start();
-                pauseMenuCardView.animate().translationY(1200);
-                cardMatch1.setEnabled(true);
-                cardMatch2.setEnabled(true);
-                cardMatch3.setEnabled(true);
-                homeAction.setEnabled(true);
-                backGroundAnim.playAnimation();
-                backgroundMusic.start();
+                resumeGame();
             }
         });
         exitOption.setOnClickListener(new View.OnClickListener() {
@@ -214,6 +196,41 @@ public class InGameActivity extends Activity {
         });
     }
 
+    private void resumeGame() {
+        effectsPlayer = MediaPlayer.create(InGameActivity.this, R.raw.resume);
+        effectsPlayer.setVolume(0f, 0.8f);
+        effectsPlayer.start();
+        pauseMenuCardView.animate().translationY(1200);
+        cardMatch1.setEnabled(true);
+        cardMatch2.setEnabled(true);
+        cardMatch3.setEnabled(true);
+        homeAction.setEnabled(true);
+        backGroundAnim.playAnimation();
+        backgroundMusic.start();
+
+        beginGameTimer();
+    }
+
+    private void beginGameTimer() {
+        long levelTime = 5000 + earnedTime;
+        gameRunningCountDownTimer = new CountDownTimer(levelTime, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                if (gameRestartingInfo.getVisibility() == View.GONE)
+                    gameRestartingInfo.setVisibility(View.VISIBLE);
+                remainimgTime = millisUntilFinished;
+                gameRestartingInfo.setText("Remaining " + millisUntilFinished / 1000 + " sec");
+            }
+
+            @Override
+            public void onFinish() {
+                startGameTextView.setText("Resume");
+                halt();
+                Toast.makeText(InGameActivity.this, "Game over", Toast.LENGTH_SHORT).show();
+            }
+        }.start();
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -227,7 +244,7 @@ public class InGameActivity extends Activity {
         effectsPlayer.start();
         startGameTextView.setText("Resume");
         backGroundAnim.pauseAnimation();
-        callPauseMenu();
+        pauseGame();
     }
 
     private void bindingViews() {
@@ -236,6 +253,7 @@ public class InGameActivity extends Activity {
         resumeOption = findViewById(R.id.start_resume_Option);
         exitOption = findViewById(R.id.exit_option);
         startGameTextView = findViewById(R.id.start_game_text_view);
+        earnedTimeTextView = findViewById(R.id.time_earned_test_view);
         imgM = findViewById(R.id.imageView);
         imgL = findViewById(R.id.imageView2);
         imgR = findViewById(R.id.imageView3);
@@ -259,7 +277,6 @@ public class InGameActivity extends Activity {
         homeAction = findViewById(R.id.home_action);
 
         gameRestartingInfo = findViewById(R.id.game_restarting_info);
-
     }
 
     private void setUpNumbers() {
@@ -412,6 +429,11 @@ public class InGameActivity extends Activity {
                         if (matchedNumber == 3) {
                             matchedNumber = 0;
                             gameRestartingInfo.setVisibility(View.VISIBLE);
+
+                            earnedTime += remainimgTime;
+
+                            earnedTimeTextView.setText("+ " + remainimgTime / 1000 + " sec");
+                            earnedTimeTextView.setVisibility(View.VISIBLE);
                             restartGame();
                         }
 
@@ -426,6 +448,9 @@ public class InGameActivity extends Activity {
     }
 
     private void restartGame() {
+        if (gameRunningCountDownTimer != null) {
+            gameRunningCountDownTimer.cancel();
+        }
         new CountDownTimer(5000, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -433,24 +458,17 @@ public class InGameActivity extends Activity {
             }
 
             public void onFinish() {
+                earnedTimeTextView.setVisibility(View.GONE);
                 gameRestartingInfo.setVisibility(View.GONE);
                 setUpNumbers();
+                beginGameTimer();
             }
 
         }.start();
     }
 
     private void playTaskAchievedSoundEffect(boolean success) {
-//        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
         if (success) {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.EFFECT_DOUBLE_CLICK));
-//            } else {
-//                //deprecated in API 26
-//                v.vibrate(500);
-//            }
-//            mp = MediaPlayer.create(this, R.raw.comleted);
             effectsPlayer = MediaPlayer.create(this, R.raw.correct);
             effectsPlayer.setVolume(0f, 1);
         } else {
@@ -469,7 +487,6 @@ public class InGameActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        callPauseMenu();
-//        super.onBackPressed();
+        pauseGame();
     }
 }
