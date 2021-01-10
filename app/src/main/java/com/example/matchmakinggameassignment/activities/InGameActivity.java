@@ -6,7 +6,10 @@ import android.app.Activity;
 import android.content.ClipData;
 
 //import android.support.v7.app.ActionBarActivity;
+import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.speech.tts.TextToSpeech;
@@ -16,9 +19,12 @@ import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.cardview.widget.CardView;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -33,7 +39,7 @@ public class InGameActivity extends Activity {
     public static final String TAG = "MainActivity2";
     TextView imgM, imgL, imgR, imgCMP1, imgCMP2, imgCMP3, gameRestartingInfo;
     LottieAnimationView lottiewView1, lottiewView2, lottiewView3;
-    CardView cardConfirm1, cardConfirm2, cardConfirm3, cardMatch1, cardMatch2, cardMatch3;
+    CardView cardConfirm1, cardConfirm2, cardConfirm3, cardMatch1, cardMatch2, cardMatch3, homeAction;
 
     boolean dragging = false;
     int draggingNumber;
@@ -45,16 +51,17 @@ public class InGameActivity extends Activity {
     private ArrayList<View> viewsToMatch;
     private TextToSpeech textToSpeechSystem;
     private MediaPlayer backgroundMusic;
-
+    private View mContentView;
     private android.widget.LinearLayout.LayoutParams layoutParams;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         bindingViews();
-
+        hide();
         viewsToMatch = new ArrayList<>();
 
         viewsToMatch.add(cardMatch1);
@@ -64,11 +71,10 @@ public class InGameActivity extends Activity {
         backgroundMusic = MediaPlayer.create(this, R.raw.background);
         backgroundMusic.setVolume(0f, 0.2f);
         backgroundMusic.setLooping(true);
-        backgroundMusic.start();
+//        backgroundMusic.start();
 
 
-//        GameMenuDialog gameMenuDialog = new GameMenuDialog(this);
-//        gameMenuDialog.show();
+        callPauseMenu();
 
         setUpNumbers();
 
@@ -76,6 +82,22 @@ public class InGameActivity extends Activity {
         setingUpAllListners();
 
 
+    }
+
+
+    private void hide() {
+        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
+    }
+
+    private void callPauseMenu() {
+        GameMenuDialog gameMenuDialog = new GameMenuDialog(this);
+//        gameMenuDialog.show();
     }
 
     private void setingUpAllListners() {
@@ -145,9 +167,17 @@ public class InGameActivity extends Activity {
                 return InGameActivity.this.onTouch(event, cardMatch3);
             }
         });
+
+        homeAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callPauseMenu();
+            }
+        });
     }
 
     private void bindingViews() {
+        mContentView = findViewById(R.id.parent_game_view);
         imgM = findViewById(R.id.imageView);
         imgL = findViewById(R.id.imageView2);
         imgR = findViewById(R.id.imageView3);
@@ -167,7 +197,15 @@ public class InGameActivity extends Activity {
         lottiewView2 = findViewById(R.id.lottie_view_2);
         lottiewView3 = findViewById(R.id.lottie_view_3);
 
+        homeAction = findViewById(R.id.home_action);
+
         gameRestartingInfo = findViewById(R.id.game_restarting_info);
+
+
+//        ActionBar actionBar = context.getSupportActionBar();
+//        if (actionBar != null) {
+//            actionBar.hide();
+//        }
     }
 
     private void setUpNumbers() {
@@ -346,4 +384,9 @@ public class InGameActivity extends Activity {
         mp.start();
     }
 
+    @Override
+    public void onBackPressed() {
+        callPauseMenu();
+//        super.onBackPressed();
+    }
 }
