@@ -6,6 +6,7 @@ import android.animation.Animator;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
@@ -29,7 +30,11 @@ public class Splash extends Activity {
         animationView.addAnimatorListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-
+                MediaPlayer
+                        backgroundMusic = MediaPlayer.create(Splash.this, R.raw.splash_loading);
+                backgroundMusic.setVolume(0f, 0.8f);
+                backgroundMusic.setLooping(false);
+//                backgroundMusic.start();
             }
 
             @Override
@@ -38,7 +43,7 @@ public class Splash extends Activity {
                 Intent myIntent = new Intent(Splash.this, InGameActivity.class);
                 ActivityOptions options =
                         ActivityOptions.makeCustomAnimation(Splash.this, R.anim.fade_in, R.anim.fade_out);
-            startActivity(myIntent, options.toBundle());
+                startActivity(myIntent, options.toBundle());
 //                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 //                startActivity(new Intent(Splash.this, InGameActivity.class));
             }

@@ -2,6 +2,7 @@ package com.example.matchmakinggameassignment.activities;
 
 
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import android.content.ClipData;
@@ -25,6 +26,7 @@ import android.view.View;
 
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -32,6 +34,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.cardview.widget.CardView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieComposition;
+import com.airbnb.lottie.LottieOnCompositionLoadedListener;
 import com.example.matchmakinggameassignment.R;
 
 
@@ -43,7 +47,7 @@ import java.util.Locale;
 public class InGameActivity extends Activity {
     public static final String TAG = "MainActivity2";
     TextView imgM, imgL, imgR, imgCMP1, imgCMP2, imgCMP3, gameRestartingInfo, startGameTextView;
-    LottieAnimationView lottiewView1, lottiewView2, lottiewView3;
+    LottieAnimationView lottiewView1, lottiewView2, lottiewView3, backGroundAnim;
     CardView cardConfirm1, cardConfirm2, cardConfirm3, cardMatch1, cardMatch2, cardMatch3, homeAction, pauseMenuCardView, resumeOption, exitOption;
 
     boolean dragging = false;
@@ -59,6 +63,7 @@ public class InGameActivity extends Activity {
     private MediaPlayer backgroundMusic;
     private View mContentView;
     private android.widget.LinearLayout.LayoutParams layoutParams;
+    private MediaPlayer effectsPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,17 +79,17 @@ public class InGameActivity extends Activity {
         viewsToMatch.add(cardMatch2);
         viewsToMatch.add(cardMatch3);
 
-        backgroundMusic = MediaPlayer.create(this, R.raw.background);
-        backgroundMusic.setVolume(0f, 0.2f);
+        backgroundMusic = MediaPlayer.create(this, R.raw.background_music_2);
+        backgroundMusic.setVolume(0f, 0.4f);
         backgroundMusic.setLooping(true);
-//        backgroundMusic.start();
+
+        backGroundAnim.setFrame(70);
 
 
         callPauseMenu();
 
         setUpNumbers();
-
-
+        
         setingUpAllListners();
 
 
@@ -115,11 +120,16 @@ public class InGameActivity extends Activity {
         resumeOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                effectsPlayer = MediaPlayer.create(InGameActivity.this, R.raw.resume);
+                effectsPlayer.setVolume(0f, 0.8f);
+                effectsPlayer.start();
                 pauseMenuCardView.animate().translationY(1200);
                 cardMatch1.setEnabled(true);
                 cardMatch2.setEnabled(true);
                 cardMatch3.setEnabled(true);
                 homeAction.setEnabled(true);
+                backGroundAnim.playAnimation();
+                backgroundMusic.start();
             }
         });
         exitOption.setOnClickListener(new View.OnClickListener() {
@@ -199,10 +209,25 @@ public class InGameActivity extends Activity {
         homeAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startGameTextView.setText("Resume");
-                callPauseMenu();
+                halt();
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        halt();
+    }
+
+    private void halt() {
+        backgroundMusic.pause();
+        effectsPlayer = MediaPlayer.create(InGameActivity.this, R.raw.pause);
+        effectsPlayer.setVolume(0f, 0.8f);
+        effectsPlayer.start();
+        startGameTextView.setText("Resume");
+        backGroundAnim.pauseAnimation();
+        callPauseMenu();
     }
 
     private void bindingViews() {
@@ -229,6 +254,7 @@ public class InGameActivity extends Activity {
         lottiewView1 = findViewById(R.id.lottie_view_1);
         lottiewView2 = findViewById(R.id.lottie_view_2);
         lottiewView3 = findViewById(R.id.lottie_view_3);
+        backGroundAnim = findViewById(R.id.background_anim);
 
         homeAction = findViewById(R.id.home_action);
 
@@ -415,12 +441,19 @@ public class InGameActivity extends Activity {
     }
 
     private void playTaskAchievedSoundEffect(boolean success) {
+//        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        MediaPlayer mp;
-        if (success)
+        if (success) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.EFFECT_DOUBLE_CLICK));
+//            } else {
+//                //deprecated in API 26
+//                v.vibrate(500);
+//            }
 //            mp = MediaPlayer.create(this, R.raw.comleted);
-            mp = MediaPlayer.create(this, R.raw.correct);
-        else {
+            effectsPlayer = MediaPlayer.create(this, R.raw.correct);
+            effectsPlayer.setVolume(0f, 1);
+        } else {
             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
@@ -428,9 +461,10 @@ public class InGameActivity extends Activity {
                 //deprecated in API 26
                 v.vibrate(500);
             }
-            mp = MediaPlayer.create(this, R.raw.error);
+            effectsPlayer = MediaPlayer.create(this, R.raw.error);
+            effectsPlayer.setVolume(0f, 0.2f);
         }
-        mp.start();
+        effectsPlayer.start();
     }
 
     @Override

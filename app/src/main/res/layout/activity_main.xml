@@ -8,6 +8,14 @@
     android:theme="@style/ThemeOverlay.MatchmakingGameAssignment.FullscreenContainer"
     tools:context=".activities.InGameActivity">
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/background_anim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/in_game_backgound_anim" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
