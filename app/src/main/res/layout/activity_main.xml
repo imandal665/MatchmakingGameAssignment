@@ -220,6 +220,7 @@
 
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/pause_menu_card_view"
             android:layout_width="500sp"
             android:layout_height="300sp"
             android:layout_centerInParent="true"
@@ -235,7 +236,7 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/start__resume_Option"
+                    android:id="@+id/start_resume_Option"
                     android:layout_width="350sp"
                     android:layout_height="90sp"
                     android:layout_margin="10sp"
@@ -245,12 +246,13 @@
                     app:cardUseCompatPadding="true">
 
                     <TextView
+                        android:id="@+id/start_game_text_view"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:fontFamily="monospace"
                         android:gravity="center"
                         android:text="Start"
-                        android:textAllCaps="true"
+
                         android:textColor="@color/white"
                         android:textSize="40sp" />
                 </androidx.cardview.widget.CardView>
@@ -271,7 +273,7 @@
                         android:fontFamily="monospace"
                         android:gravity="center"
                         android:text="Exit"
-                        android:textAllCaps="true"
+
                         android:textColor="@color/white"
                         android:textSize="40sp" />
                 </androidx.cardview.widget.CardView>

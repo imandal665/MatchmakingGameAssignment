@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.Animator;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -33,7 +34,13 @@ public class Splash extends Activity {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                startActivity(new Intent(Splash.this, InGameActivity.class));
+
+                Intent myIntent = new Intent(Splash.this, InGameActivity.class);
+                ActivityOptions options =
+                        ActivityOptions.makeCustomAnimation(Splash.this, R.anim.fade_in, R.anim.fade_out);
+            startActivity(myIntent, options.toBundle());
+//                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+//                startActivity(new Intent(Splash.this, InGameActivity.class));
             }
 
             @Override
