@@ -55,7 +55,7 @@ public class InGameActivity extends Activity {
     private android.widget.LinearLayout.LayoutParams layoutParams;
     private MediaPlayer effectsPlayer;
     private CountDownTimer gameRunningCountDownTimer;
-    private long remainimgTime = 0;
+    private long remainimgTime = 5000;
     private long earnedTime = 0;
 
     @Override
@@ -98,6 +98,8 @@ public class InGameActivity extends Activity {
     }
 
     private void pauseGame() {
+        if (gameRunningCountDownTimer != null)
+            gameRunningCountDownTimer.cancel();
         if (startGameTextView.getText().toString().equals("Resume"))
             pauseMenuCardView.animate().translationY(0);
         cardMatch1.setEnabled(false);
@@ -208,12 +210,12 @@ public class InGameActivity extends Activity {
         backGroundAnim.playAnimation();
         backgroundMusic.start();
 
-        beginGameTimer();
+        beginGameTimer(remainimgTime);
     }
 
-    private void beginGameTimer() {
-        long levelTime = 5000 + earnedTime;
-        gameRunningCountDownTimer = new CountDownTimer(levelTime, 1000) {
+    private void beginGameTimer(long time) {
+//        long levelTime = remainimgTime + earnedTime;
+        gameRunningCountDownTimer = new CountDownTimer(time, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 if (gameRestartingInfo.getVisibility() == View.GONE)
@@ -225,6 +227,7 @@ public class InGameActivity extends Activity {
             @Override
             public void onFinish() {
                 startGameTextView.setText("Resume");
+                remainimgTime=5000;
                 halt();
                 Toast.makeText(InGameActivity.this, "Game over", Toast.LENGTH_SHORT).show();
             }
@@ -430,11 +433,11 @@ public class InGameActivity extends Activity {
                             matchedNumber = 0;
                             gameRestartingInfo.setVisibility(View.VISIBLE);
 
-                            earnedTime += remainimgTime;
+                            earnedTime = remainimgTime;
 
                             earnedTimeTextView.setText("+ " + remainimgTime / 1000 + " sec");
                             earnedTimeTextView.setVisibility(View.VISIBLE);
-                            restartGame();
+                            restartGame(5000);
                         }
 
                     } else {
@@ -447,7 +450,8 @@ public class InGameActivity extends Activity {
         }
     }
 
-    private void restartGame() {
+    private void restartGame(long levelTime) {
+
         if (gameRunningCountDownTimer != null) {
             gameRunningCountDownTimer.cancel();
         }
@@ -461,7 +465,7 @@ public class InGameActivity extends Activity {
                 earnedTimeTextView.setVisibility(View.GONE);
                 gameRestartingInfo.setVisibility(View.GONE);
                 setUpNumbers();
-                beginGameTimer();
+                beginGameTimer(levelTime + earnedTime);
             }
 
         }.start();
