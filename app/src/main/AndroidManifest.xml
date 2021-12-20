@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.matchmakinggameassignment">
+    package="com.example.matchtheblocks">
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <application
@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MatchmakingGameAssignment">
         <activity
-            android:name=".activities.Splash"
+            android:name="com.example.matchtheblocks.activities.Splash"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.InGameActivity"
+            android:name="com.example.matchtheblocks.activities.InGameActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
